@@ -10,7 +10,7 @@ import (
 type Config struct {
 	HttpServer string
 	HttpPrefix string
-	DBURL      string
+	DBPATH     string
 }
 
 func InitConfig() (*Config, error) {
@@ -20,21 +20,22 @@ func InitConfig() (*Config, error) {
 
 	port := os.Getenv("HTTP_SERVER_PORT")
 	if port == "" {
-		return nil, fmt.Errorf("Port is not set")
+		return nil, fmt.Errorf("port is not set")
 	}
 
 	baseApiPrefix := os.Getenv("BASE_API_PREFIX")
 	if baseApiPrefix == "" {
-		return nil, fmt.Errorf("Prefix is not set")
+		return nil, fmt.Errorf("prefix is not set")
 	}
 
-	databaseURL := os.Getenv("DB_URL")
+	databaseURL := os.Getenv("DATABASE_PATH")
 	if databaseURL == "" {
-		return nil, fmt.Errorf("DatabaseURL is not set")
+		return nil, fmt.Errorf("databaseURL is not set")
 	}
 
 	return &Config{
 		HttpServer: port,
 		HttpPrefix: baseApiPrefix,
+		DBPATH:     databaseURL,
 	}, nil
 }

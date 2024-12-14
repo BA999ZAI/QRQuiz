@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/BA999ZAI/QRQuiz/internal/adapter/sqlite"
 	"github.com/BA999ZAI/QRQuiz/internal/config"
 	"github.com/BA999ZAI/QRQuiz/internal/controller"
 	"github.com/BA999ZAI/QRQuiz/internal/repository"
@@ -20,13 +21,19 @@ func StartApp() {
 	}
 
 	// connect to DB
-	err = loadDB()
+	db, err := sql.Open("sqlite3", cfg.DBPATH)
 	if err != nil {
-		log.Println("error with load DB: ", err)
+		log.Println("failed to initialize database: ", err)
+	}
+	defer db.Close()
+
+	// init migrations
+	if err := sqlite.RunMigrations(db); err != nil {
+		log.Println("failed to run migrations: ", err)
 	}
 
 	// init repository
-	repository := initRepository()
+	repository := initRepository(db)
 
 	// init usecases
 	usecase := initUsecase(repository)
@@ -50,13 +57,7 @@ func loadConfig() (*config.Config, error) {
 	return cfg, nil
 }
 
-// TODO: add DB connection
-func loadDB() error {
-	return nil
-}
-
-func initRepository() *repository.Repository {
-	db := &sql.DB{}
+func initRepository(db *sql.DB) *repository.Repository {
 	return repository.NewRepository(db)
 }
 

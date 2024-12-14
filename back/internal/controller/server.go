@@ -15,11 +15,12 @@ func (s *Server) RegisterRoutes(r *gin.Engine) {
 	group := r.Group(s.Cfg.HttpPrefix)
 	{
 		// Quizes
-		group.GET("/quiz", s.handlerQuizGetAll)
-		group.GET("/quiz/:id", s.handlerQuizGetById)
-		group.POST("/quiz", s.handlerQuizPost)
-		group.PATCH("/quiz/:id", s.handlerQuizPatchById)
-		group.DELETE("/quiz/:id", s.handlerQuizDeleteById)
+		group.GET("/quiz", s.handlerQuizGetAll)// is working
+		group.GET("/quiz/:id", s.handlerQuizGetById)// is working
+		group.GET("/quiz/user/:id", s.handlerQuizGetByUserId)
+		group.POST("/quiz", s.handlerQuizPost)// is working
+		group.PATCH("/quiz/:id", s.handlerQuizAddResultPost)// is working
+		group.DELETE("/quiz/:id", s.handlerQuizDeleteById)// is working
 
 		// Users
 		group.GET("/user", s.handlerUserGetAll)
@@ -34,6 +35,6 @@ func (s *Server) RegisterRoutes(r *gin.Engine) {
 		group.GET("/logout", s.handlerUserLogout)
 
 		// Health
-		group.GET("/health", s.handlerHealth)
+		group.GET("/health", s.handlerHealth)// is working
 	}
 }

@@ -1,7 +1,9 @@
 package usecase
 
 import (
+	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/BA999ZAI/QRQuiz/internal/entity"
 	"github.com/BA999ZAI/QRQuiz/internal/repository/model"
@@ -15,6 +17,20 @@ func (u *Usecase) GetQuizById(id string) (entity.Quiz, error) {
 	}
 
 	response := u.parseQuizRepoToBody(quiz)
+
+	return response, nil
+}
+
+func (u *Usecase) GetQuizByUserId(id string) ([]entity.Quiz, error) {
+	quizzes, err := u.DB.GetQuizByUserId(id)
+	if err != nil {
+		return nil, fmt.Errorf("db GetQuizById: %w", err)
+	}
+
+	var response []entity.Quiz
+	for _, quiz := range quizzes {
+		response = append(response, u.parseQuizRepoToBody(quiz))
+	}
 
 	return response, nil
 }
@@ -33,30 +49,22 @@ func (u *Usecase) GetAllQuizes() ([]entity.Quiz, error) {
 	return response, nil
 }
 
-func (u *Usecase) CreateQuiz(body entity.Quiz) (entity.Quiz, error) {
+func (u *Usecase) CreateQuiz(body entity.Quiz) error {
+	body.ID = uuid.New()
+	if body.Results == nil {
+		body.Results = []entity.Reply{}
+	}
+	body.CreatedAt = time.Now()
+	if body.TimeToLive.IsZero() {
+		body.TimeToLive = time.Now().Add(time.Hour * 24 * 7)
+	}
+
 	newQuiz := u.parseQuizBodyToRepo(body)
-
-	quiz, err := u.DB.CreateQuiz(newQuiz)
-	if err != nil {
-		return entity.Quiz{}, fmt.Errorf("db createQuiz: %w", err)
+	if err := u.DB.CreateQuiz(newQuiz); err != nil {
+		return fmt.Errorf("db createQuiz: %w", err)
 	}
 
-	response := u.parseQuizRepoToBody(quiz)
-
-	return response, nil
-}
-
-func (u *Usecase) UpdateQuiz(quiz entity.Quiz) (entity.Quiz, error) {
-	newQuiz := u.parseQuizBodyToRepo(quiz)
-
-	updatedQuiz, err := u.DB.UpdateQuiz(newQuiz)
-	if err != nil {
-		return entity.Quiz{}, fmt.Errorf("db UpdateQuiz: %w", err)
-	}
-
-	response := u.parseQuizRepoToBody(updatedQuiz)
-
-	return response, nil
+	return nil
 }
 
 func (u *Usecase) DeleteQuiz(id string) error {
@@ -67,63 +75,105 @@ func (u *Usecase) DeleteQuiz(id string) error {
 	return nil
 }
 
-func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
-	newQuizId := uuid.New()
-	newQuiz := model.Quiz{
-		ID:          newQuizId.String(),
-		Title:       quiz.Title,
-		Description: quiz.Description,
-		Questions:   make([]model.Question, 0),
+func (u *Usecase) AddResult(id string, result entity.Reply) (entity.Quiz, error) {
+	rawQuiz, err := u.DB.GetQuizById(id)
+	if err != nil {
+		return entity.Quiz{}, fmt.Errorf("db GetQuizById: %w", err)
 	}
 
-	newQuestionId := 0
-	for indexQuestion, valueQuestion := range quiz.Questions {
-		newQuiz.Questions = append(newQuiz.Questions, model.Question{
-			ID:       newQuestionId,
-			Question: valueQuestion.Question,
-			Answers:  make([]model.Answer, 0),
-		})
+	quiz := u.parseQuizRepoToBody(rawQuiz)
 
-		newAnswerId := 0
-		for _, valAnswer := range valueQuestion.Answers {
-			newQuiz.Questions[indexQuestion].Answers = append(newQuiz.Questions[indexQuestion].Answers, model.Answer{
-				ID:      newAnswerId,
-				Answer:  valAnswer.Answer,
-				Correct: valAnswer.Correct,
-			})
+	var newResult = make([]entity.Reply, 0, len(quiz.Results)+1)
+	newResult = append(newResult, quiz.Results...)
+	newResult = append(newResult, result)
 
-			newAnswerId++
-		}
+	resultsJSON, err := json.Marshal(newResult)
+	if err != nil {
+		return entity.Quiz{}, fmt.Errorf("json.Marshal results: %w", err)
+	}
 
-		newQuestionId++
+	newQuiz := model.Quiz{
+		ID:         quiz.ID.String(),
+		Title:      quiz.Title,
+		Questions:  rawQuiz.Questions,
+		Results:    string(resultsJSON),
+		CreatedAt:  rawQuiz.CreatedAt,
+		TimeToLive: rawQuiz.TimeToLive,
+		LinkToQuiz: rawQuiz.LinkToQuiz,
+		UserID:     rawQuiz.UserID,
+	}
+
+	if err := u.DB.AddResultToQuiz(newQuiz); err != nil {
+		return entity.Quiz{}, fmt.Errorf("db UpdateQuiz: %w", err)
+	}
+
+	newQuiz, err = u.DB.GetQuizById(id)
+	if err != nil {
+		return entity.Quiz{}, fmt.Errorf("usecase GetQuizById: %w", err)
+	}
+
+	response := u.parseQuizRepoToBody(newQuiz)
+
+	return response, nil
+}
+
+func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
+	questionsJSON, err := json.Marshal(quiz.Questions)
+	if err != nil {
+		fmt.Println("json.Marshal questions: ", err)
+	}
+
+	resultsJSON, err := json.Marshal(quiz.Results)
+	if err != nil {
+		fmt.Println("json.Marshal results: ", err)
+	}
+
+	newQuiz := model.Quiz{
+		ID:         quiz.ID.String(),
+		Title:      quiz.Title,
+		Questions:  string(questionsJSON),
+		Results:    string(resultsJSON),
+		CreatedAt:  quiz.CreatedAt,
+		TimeToLive: quiz.TimeToLive,
+		LinkToQuiz: quiz.LinkToQuiz,
+		UserID:     quiz.UserID.String(),
 	}
 
 	return newQuiz
 }
 
 func (u *Usecase) parseQuizRepoToBody(quiz model.Quiz) entity.Quiz {
-	rawQuiz := entity.Quiz{
-		ID:          quiz.ID,
-		Title:       quiz.Title,
-		Description: quiz.Description,
-		Questions:   make([]entity.Question, 0),
+	var questions []entity.Question
+	var results []entity.Reply
+
+	if err := json.Unmarshal([]byte(quiz.Questions), &questions); err != nil {
+		fmt.Println("json.Unmarshal questions: ", err)
 	}
 
-	for indexQuestion, valueQuestion := range quiz.Questions {
-		rawQuiz.Questions = append(rawQuiz.Questions, entity.Question{
-			ID:       valueQuestion.ID,
-			Question: valueQuestion.Question,
-			Answers:  make([]entity.Answer, 0),
-		})
-
-		for _, valAnswer := range valueQuestion.Answers {
-			rawQuiz.Questions[indexQuestion].Answers = append(rawQuiz.Questions[indexQuestion].Answers, entity.Answer{
-				ID:      valAnswer.ID,
-				Answer:  valAnswer.Answer,
-				Correct: valAnswer.Correct,
-			})
-		}
+	if err := json.Unmarshal([]byte(quiz.Results), &results); err != nil {
+		fmt.Println("json.Unmarshal results: ", err)
 	}
 
-	return rawQuiz
+	quizID, err := uuid.Parse(quiz.ID)
+	if err != nil {
+		fmt.Println("uuid.Parse quiz.ID: ", err)
+	}
+
+	userID, err := uuid.Parse(quiz.UserID)
+	if err != nil {
+		fmt.Println("uuid.Parse quiz.UserID: ", err)
+	}
+
+	response := entity.Quiz{
+		ID:         quizID,
+		Title:      quiz.Title,
+		Questions:  questions,
+		Results:    results,
+		CreatedAt:  quiz.CreatedAt,
+		TimeToLive: quiz.TimeToLive,
+		LinkToQuiz: quiz.LinkToQuiz,
+		UserID:     userID,
+	}
+
+	return response
 }
