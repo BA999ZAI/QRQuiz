@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/skip2/go-qrcode"
 )
 
 func (s *Server) handlerQuizGetById(c *gin.Context) {
@@ -17,7 +19,23 @@ func (s *Server) handlerQuizGetById(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error usecase": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, quiz)
+	codeData, err := generate(quiz.LinkToQuiz, 256)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"generate qr-code": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"quiz": quiz,
+		"qr":   codeData,
+	})
+}
+
+func generate(content string, size int) ([]byte, error) {
+	qrCode, err := qrcode.Encode(content, qrcode.Medium, size)
+	if err != nil {
+		return nil, fmt.Errorf("could not generate a QR code: %v", err)
+	}
+	return qrCode, nil
 }
 
 func (s *Server) handlerQuizGetByUserId(c *gin.Context) {
