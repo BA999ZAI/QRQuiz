@@ -32,7 +32,7 @@ func (s *Server) RegisterRoutes(r *gin.Engine) {
 		// Authorization
 		group.POST("/login", s.handlerUserLogin)
 		group.POST("/register", s.handlerUserRegister)
-		group.GET("/logout", s.handlerUserLogout)
+		group.GET("/logout", s.handlerUserLogout)// maybe don`t need
 
 		// Health
 		group.GET("/health", s.handlerHealth)// is working
