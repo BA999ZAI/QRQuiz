@@ -16,6 +16,7 @@ func (s *Server) handlerQuizPost(c *gin.Context) {
 
 	if err := s.Usecase.CreateQuiz(quiz); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error usecase": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusCreated, "quiz is created")

@@ -23,11 +23,11 @@ func (s *Server) RegisterRoutes(r *gin.Engine) {
 		group.DELETE("/quiz/:id", s.handlerQuizDeleteById)// is working
 
 		// Users
-		group.GET("/user", s.handlerUserGetAll)
-		group.GET("/user/:id", s.handlerUserGetById)
-		group.POST("/user", s.handlerUserPost)
-		group.PATCH("/user/:id", s.handlerUserPatchById)
-		group.DELETE("/user/:id", s.handlerUserDeleteById)
+		group.GET("/user", s.handlerUserGetAll)// is working
+		group.GET("/user/:id", s.handlerUserGetById)// is working
+		group.POST("/user", s.handlerUserPost)// is working
+		group.PATCH("/user/:id", s.handlerUserPatchById)// is working
+		group.DELETE("/user/:id", s.handlerUserDeleteById)// is working
 
 		// Authorization
 		group.POST("/login", s.handlerUserLogin)
