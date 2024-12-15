@@ -109,3 +109,18 @@ func (u *Usecase) parseUserRepoToBody(user model.User) entity.User {
 
 	return response
 }
+
+func (u *Usecase) AuthenticateUser(email, password string) (entity.User, error) {
+	userModel, err := u.DB.GetUserByEmail(email)
+	if err != nil {
+		return entity.User{}, fmt.Errorf("user not found: %w", err)
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(userModel.HashPassword), []byte(password)); err != nil {
+		return entity.User{}, fmt.Errorf("invalid password")
+	}
+
+	userEntity := u.parseUserRepoToBody(userModel)
+
+	return userEntity, nil
+}

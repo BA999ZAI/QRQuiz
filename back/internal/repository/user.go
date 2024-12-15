@@ -107,3 +107,21 @@ func (r *Repository) DeleteUser(id string) error {
 
 	return nil
 }
+
+func (r *Repository) GetUserByEmail(email string) (model.User, error) {
+	query := `SELECT id, email, password FROM users WHERE email = ?`
+	var user model.User
+
+	if err := r.db.QueryRow(query, email).Scan(
+		&user.ID,
+		&user.Email,
+		&user.HashPassword,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return model.User{}, fmt.Errorf("user not found")
+		}
+		return model.User{}, fmt.Errorf("failed to query user by email: %w", err)
+	}
+
+	return user, nil
+}
