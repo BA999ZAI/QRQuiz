@@ -100,6 +100,7 @@ func (u *Usecase) AddResult(id string, result entity.Reply) (entity.Quiz, error)
 		CreatedAt:  rawQuiz.CreatedAt,
 		TimeToLive: rawQuiz.TimeToLive,
 		LinkToQuiz: rawQuiz.LinkToQuiz,
+		Status:     rawQuiz.Status,
 		UserID:     rawQuiz.UserID,
 	}
 
@@ -115,6 +116,29 @@ func (u *Usecase) AddResult(id string, result entity.Reply) (entity.Quiz, error)
 	response := u.parseQuizRepoToBody(newQuiz)
 
 	return response, nil
+}
+
+func (u *Usecase) CheckQuiz() error {
+	quizzes, err := u.DB.GetQuizByStatus()
+	if err != nil {
+		return fmt.Errorf("db GetQuizByStatus: %w", err)
+	}
+
+	for _, val := range quizzes {
+		if val.Status {
+			continue
+		}
+
+		if !val.TimeToLive.Before(time.Now()) {
+			continue
+		}
+
+		if err := u.DB.UpdateQuizStatus(val.ID, true); err != nil {
+			return fmt.Errorf("db UpdateQuiz: %w", err)
+		}
+	}
+
+	return nil
 }
 
 func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
@@ -136,6 +160,7 @@ func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
 		CreatedAt:  quiz.CreatedAt,
 		TimeToLive: quiz.TimeToLive,
 		LinkToQuiz: quiz.LinkToQuiz,
+		Status:     quiz.Status,
 		UserID:     quiz.UserID.String(),
 	}
 
@@ -172,6 +197,7 @@ func (u *Usecase) parseQuizRepoToBody(quiz model.Quiz) entity.Quiz {
 		CreatedAt:  quiz.CreatedAt,
 		TimeToLive: quiz.TimeToLive,
 		LinkToQuiz: quiz.LinkToQuiz,
+		Status:     quiz.Status,
 		UserID:     userID,
 	}
 
