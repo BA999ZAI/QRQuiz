@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/BA999ZAI/QRQuiz/internal/service/middleware"
 	"log"
 	"time"
 
@@ -46,6 +47,14 @@ func (s *Server) RegisterRoutes(r *gin.Engine) {
 		group.POST("/login", s.handlerUserLogin)
 		group.POST("/register", s.handlerUserRegister)
 		group.GET("/logout", s.handlerUserLogout) // maybe don`t need
+
+		// Middleware
+		auth := r.Group("/")
+		auth.Use(middleware.JWTAuthMiddleware())
+		{
+			auth.GET("/profile", s.handlerUserProfile)
+			auth.POST("/logout", s.handlerUserLogout)
+		}
 
 		// Health
 		group.GET("/health", s.handlerHealth) // is working
