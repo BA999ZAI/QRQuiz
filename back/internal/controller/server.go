@@ -6,7 +6,6 @@ import (
 
 	"github.com/BA999ZAI/QRQuiz/internal/config"
 	"github.com/BA999ZAI/QRQuiz/internal/usecase"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,15 +15,6 @@ type Server struct {
 }
 
 func (s *Server) RegisterRoutes(r *gin.Engine) {
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://example.com"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
-
 	group := r.Group(s.Cfg.HttpPrefix)
 	{
 		// Quizes
@@ -50,19 +40,4 @@ func (s *Server) RegisterRoutes(r *gin.Engine) {
 		// Health
 		group.GET("/health", s.handlerHealth) // is working
 	}
-
-	go func() {
-		ticker := time.NewTicker(1 * time.Second)
-		defer ticker.Stop()
-
-		for {
-			select {
-			case <-ticker.C:
-				if err := s.Usecase.CheckQuiz(); err != nil {
-					log.Println("error with check quiz: ", err)
-				}
-			}
-		}
-	}()
-
 }
