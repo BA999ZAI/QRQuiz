@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/BA999ZAI/QRQuiz/internal/adapter/sqlite"
 	"github.com/BA999ZAI/QRQuiz/internal/config"
@@ -38,20 +37,6 @@ func StartApp() {
 
 	// init usecases
 	usecase := initUsecase(repository)
-
-	go func() {
-		ticker := time.NewTicker(1 * time.Second)
-		defer ticker.Stop()
-
-		for {
-			select {
-			case <- ticker.C:
-				if err := usecase.CheckQuiz(); err != nil {
-					log.Println("error with check quiz: ", err)
-				}
-			}
-		}
-	}()
 
 	// init routes
 	routes, err := initRoutes(cfg, usecase)
