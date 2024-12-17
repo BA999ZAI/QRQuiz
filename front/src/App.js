@@ -4,7 +4,6 @@ import Auth from "./pages/auth";
 import Base from "./pages/base";
 import CreateQuiz from "./pages/create_quiz";
 import QrQuiz from "./pages/qr_quiz";
-import Registration from "./pages/reg";
 import UserPanel from "./pages/user_panel";
 
 function App() {
@@ -14,9 +13,8 @@ function App() {
         <Route path="/">
           <Route path="authorization" element={<Auth />} />
           <Route path="" element={<Base />} />
-          <Route path="add_quiz" element={<CreateQuiz />} />
+          <Route path="create_quiz" element={<CreateQuiz />} />
           <Route path="qr" element={<QrQuiz />} />
-          <Route path="registration" element={<Registration />} />
           <Route path="panel" element={<UserPanel />} />
         </Route>
       </Routes>

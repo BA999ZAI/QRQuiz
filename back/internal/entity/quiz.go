@@ -14,7 +14,8 @@ type Quiz struct {
 	CreatedAt  time.Time  `json:"created_at"`
 	TimeToLive time.Time  `json:"time_to_live"`
 	LinkToQuiz string     `json:"link_to_quiz"`
-	UserID    uuid.UUID  `json:"user_id"`
+	Status     bool       `json:"status"`
+	UserID     uuid.UUID  `json:"user_id"`
 }
 
 type Question struct {

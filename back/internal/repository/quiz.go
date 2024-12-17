@@ -20,6 +20,7 @@ func (r *Repository) GetQuizById(id string) (model.Quiz, error) {
 		&quiz.CreatedAt,
 		&quiz.TimeToLive,
 		&quiz.LinkToQuiz,
+		&quiz.Status,
 		&quiz.UserID,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -52,6 +53,7 @@ func (r *Repository) GetQuizByUserId(id string) ([]model.Quiz, error) {
 			&quiz.CreatedAt,
 			&quiz.TimeToLive,
 			&quiz.LinkToQuiz,
+			&quiz.Status,
 			&quiz.UserID,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan quiz: %w", err)
@@ -83,6 +85,7 @@ func (r *Repository) GetQuizAll() ([]model.Quiz, error) {
 			&quiz.CreatedAt,
 			&quiz.TimeToLive,
 			&quiz.LinkToQuiz,
+			&quiz.Status,
 			&quiz.UserID,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan quiz: %w", err)
@@ -104,6 +107,7 @@ func (r *Repository) CreateQuiz(quiz model.Quiz) error {
 			created_at,
 			time_to_live,
 			link_to_quiz,
+			status,
 			user_id
 		) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
 			quiz.ID,
@@ -113,6 +117,7 @@ func (r *Repository) CreateQuiz(quiz model.Quiz) error {
 			quiz.CreatedAt,
 			quiz.TimeToLive,
 			quiz.LinkToQuiz,
+			quiz.Status,
 			quiz.UserID,
 		); err != nil {
 		return fmt.Errorf("db Exec: %w", err)
@@ -130,6 +135,7 @@ func (r *Repository) AddResultToQuiz(quiz model.Quiz) error {
 			created_at = ?,
 			time_to_live = ?,
 			link_to_quiz = ?,
+			status = ?,
 			user_id = ?
 		WHERE id = ?`
 	if _, err := r.db.Exec(
@@ -140,6 +146,7 @@ func (r *Repository) AddResultToQuiz(quiz model.Quiz) error {
 		quiz.CreatedAt,
 		quiz.TimeToLive,
 		quiz.LinkToQuiz,
+		quiz.Status,
 		quiz.UserID,
 		quiz.ID,
 	); err != nil {
@@ -164,6 +171,47 @@ func (r *Repository) DeleteQuiz(id string) error {
 
 	if rowsAffected == 0 {
 		return fmt.Errorf("quiz with ID %s not found", id)
+	}
+
+	return nil
+}
+
+func (r *Repository) GetQuizByStatus() ([]model.Quiz, error) {
+	query := `SELECT * FROM quizzes WHERE status = ?`
+
+	rows, err := r.db.Query(query, false)
+	if err != nil {
+		return nil, fmt.Errorf("db Query: %w", err)
+	}
+	defer rows.Close()
+
+	var quizzes []model.Quiz
+	for rows.Next() {
+		var quiz model.Quiz
+		if err := rows.Scan(
+			&quiz.ID,
+			&quiz.Title,
+			&quiz.Questions,
+			&quiz.Results,
+			&quiz.CreatedAt,
+			&quiz.TimeToLive,
+			&quiz.LinkToQuiz,
+			&quiz.Status,
+			&quiz.UserID,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan quiz: %w", err)
+		}
+
+		quizzes = append(quizzes, quiz)
+	}
+
+	return quizzes, nil
+}
+
+func (r *Repository) UpdateQuizStatus(id string, status bool) error {
+	query := `UPDATE quizzes SET status = ? WHERE id = ?`
+	if _, err := r.db.Exec(query, status, id); err != nil {
+		return fmt.Errorf("db Exec: %w", err)
 	}
 
 	return nil

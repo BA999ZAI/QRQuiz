@@ -22,6 +22,7 @@ const (
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		time_to_live TIMESTAMP DEFAULT (datetime ('now', '+1 day')),
 		link_to_quiz TEXT NOT NULL,
+		status BOOLEAN NOT NULL DEFAULT FALSE,
 		user_id TEXT NOT NULL,
 		FOREIGN KEY (user_id) REFERENCES users(id)
 	);`
