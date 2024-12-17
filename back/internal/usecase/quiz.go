@@ -102,6 +102,7 @@ func (u *Usecase) AddResult(id string, result entity.Reply) (entity.Quiz, error)
 		LinkToQuiz: rawQuiz.LinkToQuiz,
 		Status:     rawQuiz.Status,
 		UserID:     rawQuiz.UserID,
+		Answers:    rawQuiz.Answers,
 	}
 
 	if err := u.DB.AddResultToQuiz(newQuiz); err != nil {
@@ -162,6 +163,7 @@ func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
 		LinkToQuiz: quiz.LinkToQuiz,
 		Status:     quiz.Status,
 		UserID:     quiz.UserID.String(),
+		Answers:    quiz.Answers,
 	}
 
 	return newQuiz
@@ -170,6 +172,16 @@ func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
 func (u *Usecase) parseQuizRepoToBody(quiz model.Quiz) entity.Quiz {
 	var questions []entity.Question
 	var results []entity.Reply
+	var answers []string
+
+	for _, answer := range quiz.Answers {
+		if answer == "" {
+			continue
+		}
+		if err := json.Unmarshal([]byte(answer), &answers); err != nil {
+			fmt.Println("json.Unmarshal answers: ", err)
+		}
+	}
 
 	if err := json.Unmarshal([]byte(quiz.Questions), &questions); err != nil {
 		fmt.Println("json.Unmarshal questions: ", err)
@@ -199,6 +211,7 @@ func (u *Usecase) parseQuizRepoToBody(quiz model.Quiz) entity.Quiz {
 		LinkToQuiz: quiz.LinkToQuiz,
 		Status:     quiz.Status,
 		UserID:     userID,
+		Answers:    answers,
 	}
 
 	return response

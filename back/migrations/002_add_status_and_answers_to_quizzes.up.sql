@@ -1,0 +1,5 @@
+ALTER TABLE quizzes
+    ADD COLUMN status BOOLEAN NOT NULL DEFAULT FALSE;
+
+ALTER TABLE quizzes
+    ADD COLUMN answers TEXT;
