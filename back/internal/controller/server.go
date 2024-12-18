@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/BA999ZAI/QRQuiz/internal/service/middleware"
 	"log"
 	"time"
 
@@ -45,7 +46,17 @@ func (s *Server) RegisterRoutes(r *gin.Engine) {
 		// Authorization
 		group.POST("/login", s.handlerUserLogin)
 		group.POST("/register", s.handlerUserRegister)
-		group.GET("/logout", s.handlerUserLogout) // maybe don`t need
+
+		// Middleware
+		auth := group
+		auth.Use(middleware.JWTAuthMiddleware())
+		// TODO: продумаьть и обернуть пользовательские ручки  в middleware
+		//{
+		//	auth.GET("/quiz/user/:id", s.handlerQuizGetByUserId) // Пример защищенного маршрута
+		//	auth.POST("/quiz", s.handlerQuizPost)                // Создание квиза
+		//	auth.PATCH("/quiz/:id", s.handlerQuizAddResultPost)  // Добавление результата
+		//	auth.DELETE("/quiz/:id", s.handlerQuizDeleteById)    // Удаление квиза
+		//}
 
 		// Health
 		group.GET("/health", s.handlerHealth) // is working

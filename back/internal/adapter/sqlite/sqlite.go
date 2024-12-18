@@ -24,7 +24,8 @@ const (
 		link_to_quiz TEXT NOT NULL,
 		status BOOLEAN NOT NULL DEFAULT FALSE,
 		user_id TEXT NOT NULL,
-		FOREIGN KEY (user_id) REFERENCES users(id)
+		FOREIGN KEY (user_id) REFERENCES users(id),
+        answers TEXT
 	);`
 )
 
