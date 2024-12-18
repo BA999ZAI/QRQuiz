@@ -214,16 +214,7 @@ func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
 func (u *Usecase) parseQuizRepoToBody(quiz model.Quiz) entity.Quiz {
 	var questions []entity.Question
 	var results []entity.Reply
-	var answers []string
-
-	for _, answer := range quiz.Answers {
-		if answer == "" {
-			continue
-		}
-		if err := json.Unmarshal([]byte(answer), &answers); err != nil {
-			fmt.Println("json.Unmarshal answers: ", err)
-		}
-	}
+	var answers string
 
 	if err := json.Unmarshal([]byte(quiz.Questions), &questions); err != nil {
 		fmt.Println("json.Unmarshal questions: ", err)
@@ -231,6 +222,10 @@ func (u *Usecase) parseQuizRepoToBody(quiz model.Quiz) entity.Quiz {
 
 	if err := json.Unmarshal([]byte(quiz.Results), &results); err != nil {
 		fmt.Println("json.Unmarshal results: ", err)
+	}
+
+	if err := json.Unmarshal([]byte(quiz.Answers), &answers); err != nil {
+		fmt.Println("json.Unmarshal answers: ", err)
 	}
 
 	quizID, err := uuid.Parse(quiz.ID)

@@ -28,8 +28,8 @@ func (s *Server) handlerUserLogin(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Login successful",
 		"token":   token,
+		"user_id": user.ID,
 	})
 }
 
@@ -46,21 +46,4 @@ func (s *Server) handlerUserRegister(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
-}
-
-func (s *Server) handlerUserProfile(c *gin.Context) {
-	userID, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "User ID not found in context"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Welcome to your profile!",
-		"userID":  userID,
-	})
-}
-
-func (s *Server) handlerUserLogout(c *gin.Context) {
-	c.JSON(http.StatusOK, "Logout")
 }
