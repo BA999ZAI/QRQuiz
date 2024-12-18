@@ -195,6 +195,11 @@ func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
 		fmt.Println("json.Marshal results: ", err)
 	}
 
+	answersJSON, err := json.Marshal(quiz.Answers)
+	if err != nil {
+		fmt.Println("json.Marshal answers: ", err)
+	}
+
 	newQuiz := model.Quiz{
 		ID:         quiz.ID.String(),
 		Title:      quiz.Title,
@@ -205,7 +210,7 @@ func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
 		LinkToQuiz: quiz.LinkToQuiz,
 		Status:     quiz.Status,
 		UserID:     quiz.UserID.String(),
-		Answers:    quiz.Answers,
+		Answers:    string(answersJSON),
 	}
 
 	return newQuiz
