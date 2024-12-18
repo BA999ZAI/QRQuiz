@@ -12,5 +12,7 @@ CREATE TABLE quizzes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     time_to_live TIMESTAMP DEFAULT (datetime ('now', '+1 day')),
     link_to_quiz TEXT NOT NULL,
-    user_id TEXT NOT NULL
+    user_id TEXT NOT NULL,
+    answers TEXT,
+    status BOOLEAN NOT NULL DEFAULT FALSE,
 );
