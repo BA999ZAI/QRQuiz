@@ -3,8 +3,9 @@ package usecase
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/xuri/excelize/v2"
 	"time"
+
+	"github.com/xuri/excelize/v2"
 
 	"github.com/BA999ZAI/QRQuiz/internal/entity"
 	"github.com/BA999ZAI/QRQuiz/internal/repository/model"
@@ -52,12 +53,15 @@ func (u *Usecase) GetAllQuizes() ([]entity.Quiz, error) {
 
 func (u *Usecase) CreateQuiz(body entity.Quiz) error {
 	body.ID = uuid.New()
-	if body.Results == nil {
-		body.Results = []entity.Reply{}
-	}
+	body.Results = [][]entity.Reply{}
 	body.CreatedAt = time.Now()
+
 	if body.TimeToLive.IsZero() {
 		body.TimeToLive = time.Now().Add(time.Hour * 24 * 7)
+	}
+
+	if body.TimeToLive.Before(time.Now()) {
+		body.Status = true
 	}
 
 	newQuiz := u.parseQuizBodyToRepo(body)
@@ -76,26 +80,32 @@ func (u *Usecase) DeleteQuiz(id string) error {
 	return nil
 }
 
-func (u *Usecase) AddResult(id string, result entity.Reply) (entity.Quiz, error) {
+func (u *Usecase) AddResult(id string, result []entity.Reply) error {
 	rawQuiz, err := u.DB.GetQuizById(id)
 	if err != nil {
-		return entity.Quiz{}, fmt.Errorf("db GetQuizById: %w", err)
+		return fmt.Errorf("db GetQuizById: %w", err)
 	}
 
 	quiz := u.parseQuizRepoToBody(rawQuiz)
 
-	var newResult = make([]entity.Reply, 0, len(quiz.Results)+1)
-	newResult = append(newResult, quiz.Results...)
-	newResult = append(newResult, result)
+	newResult := make([]entity.Reply, 0, len(result))
+	for _, reply := range result {
+		newResult = append(newResult, entity.Reply{
+			ID:    reply.ID,
+			Reply: reply.Reply,
+		})
+	}
 
-	resultsJSON, err := json.Marshal(newResult)
+	quiz.Results = append(quiz.Results, newResult)
+
+	resultsJSON, err := json.Marshal(quiz.Results)
 	if err != nil {
-		return entity.Quiz{}, fmt.Errorf("json.Marshal results: %w", err)
+		return fmt.Errorf("json.Marshal results: %w", err)
 	}
 
 	newQuiz := model.Quiz{
-		ID:         quiz.ID.String(),
-		Title:      quiz.Title,
+		ID:         rawQuiz.ID,
+		Title:      rawQuiz.Title,
 		Questions:  rawQuiz.Questions,
 		Results:    string(resultsJSON),
 		CreatedAt:  rawQuiz.CreatedAt,
@@ -103,21 +113,13 @@ func (u *Usecase) AddResult(id string, result entity.Reply) (entity.Quiz, error)
 		LinkToQuiz: rawQuiz.LinkToQuiz,
 		Status:     rawQuiz.Status,
 		UserID:     rawQuiz.UserID,
-		Answers:    rawQuiz.Answers,
 	}
 
 	if err := u.DB.AddResultToQuiz(newQuiz); err != nil {
-		return entity.Quiz{}, fmt.Errorf("db UpdateQuiz: %w", err)
+		return fmt.Errorf("db UpdateQuiz: %w", err)
 	}
 
-	newQuiz, err = u.DB.GetQuizById(id)
-	if err != nil {
-		return entity.Quiz{}, fmt.Errorf("usecase GetQuizById: %w", err)
-	}
-
-	response := u.parseQuizRepoToBody(newQuiz)
-
-	return response, nil
+	return nil
 }
 
 func (u *Usecase) CheckQuiz() error {
@@ -167,10 +169,10 @@ func (u *Usecase) exportQuizResultsToExcel(quizID string) error {
 	}
 
 	row := 2
-	for _, result := range quiz.Results {
-		for i, answer := range result.Reply {
-			f.SetCellValue(sheetName, fmt.Sprintf("A%d", row), i+1)    // Номер ответа
-			f.SetCellValue(sheetName, fmt.Sprintf("B%d", row), answer) // Значение ответа
+	for _, results := range quiz.Results {
+		for _, reply := range results {
+			f.SetCellValue(sheetName, fmt.Sprintf("A%d", row), reply.ID)    // Номер ответа
+			f.SetCellValue(sheetName, fmt.Sprintf("B%d", row), reply.Reply) // Значение ответа
 			row++
 		}
 	}
@@ -195,11 +197,6 @@ func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
 		fmt.Println("json.Marshal results: ", err)
 	}
 
-	answersJSON, err := json.Marshal(quiz.Answers)
-	if err != nil {
-		fmt.Println("json.Marshal answers: ", err)
-	}
-
 	newQuiz := model.Quiz{
 		ID:         quiz.ID.String(),
 		Title:      quiz.Title,
@@ -210,7 +207,6 @@ func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
 		LinkToQuiz: quiz.LinkToQuiz,
 		Status:     quiz.Status,
 		UserID:     quiz.UserID.String(),
-		Answers:    string(answersJSON),
 	}
 
 	return newQuiz
@@ -218,8 +214,7 @@ func (u *Usecase) parseQuizBodyToRepo(quiz entity.Quiz) model.Quiz {
 
 func (u *Usecase) parseQuizRepoToBody(quiz model.Quiz) entity.Quiz {
 	var questions []entity.Question
-	var results []entity.Reply
-	var answers string
+	var results [][]entity.Reply
 
 	if err := json.Unmarshal([]byte(quiz.Questions), &questions); err != nil {
 		fmt.Println("json.Unmarshal questions: ", err)
@@ -227,10 +222,6 @@ func (u *Usecase) parseQuizRepoToBody(quiz model.Quiz) entity.Quiz {
 
 	if err := json.Unmarshal([]byte(quiz.Results), &results); err != nil {
 		fmt.Println("json.Unmarshal results: ", err)
-	}
-
-	if err := json.Unmarshal([]byte(quiz.Answers), &answers); err != nil {
-		fmt.Println("json.Unmarshal answers: ", err)
 	}
 
 	quizID, err := uuid.Parse(quiz.ID)
@@ -253,7 +244,6 @@ func (u *Usecase) parseQuizRepoToBody(quiz model.Quiz) entity.Quiz {
 		LinkToQuiz: quiz.LinkToQuiz,
 		Status:     quiz.Status,
 		UserID:     userID,
-		Answers:    answers,
 	}
 
 	return response

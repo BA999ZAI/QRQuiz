@@ -25,7 +25,6 @@ const (
 		status BOOLEAN NOT NULL DEFAULT FALSE,
 		user_id TEXT NOT NULL,
 		FOREIGN KEY (user_id) REFERENCES users(id),
-        answers TEXT
 	);`
 )
 

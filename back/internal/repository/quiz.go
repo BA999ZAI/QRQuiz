@@ -22,7 +22,6 @@ func (r *Repository) GetQuizById(id string) (model.Quiz, error) {
 		&quiz.LinkToQuiz,
 		&quiz.Status,
 		&quiz.UserID,
-		&quiz.Answers,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return model.Quiz{}, fmt.Errorf("quiz not found: %w", err)
@@ -56,7 +55,6 @@ func (r *Repository) GetQuizByUserId(id string) ([]model.Quiz, error) {
 			&quiz.LinkToQuiz,
 			&quiz.Status,
 			&quiz.UserID,
-			&quiz.Answers,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan quiz: %w", err)
 		}
@@ -89,7 +87,6 @@ func (r *Repository) GetQuizAll() ([]model.Quiz, error) {
 			&quiz.LinkToQuiz,
 			&quiz.Status,
 			&quiz.UserID,
-			&quiz.Answers,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan quiz: %w", err)
 		}
@@ -112,8 +109,7 @@ func (r *Repository) CreateQuiz(quiz model.Quiz) error {
 			link_to_quiz,
 			status,
 			user_id
-			answers
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		quiz.ID,
 		quiz.Title,
 		quiz.Questions,
@@ -123,7 +119,6 @@ func (r *Repository) CreateQuiz(quiz model.Quiz) error {
 		quiz.LinkToQuiz,
 		quiz.Status,
 		quiz.UserID,
-		quiz.Answers,
 	); err != nil {
 		return fmt.Errorf("db Exec: %w", err)
 	}
@@ -142,7 +137,6 @@ func (r *Repository) AddResultToQuiz(quiz model.Quiz) error {
 			link_to_quiz = ?,
 			status = ?,
 			user_id = ?
-			answers = ?
 		WHERE id = ?`
 	if _, err := r.db.Exec(
 		query,
@@ -155,7 +149,6 @@ func (r *Repository) AddResultToQuiz(quiz model.Quiz) error {
 		quiz.Status,
 		quiz.UserID,
 		quiz.ID,
-		quiz.Answers,
 	); err != nil {
 		return fmt.Errorf("db Exec: %w", err)
 	}
@@ -205,7 +198,6 @@ func (r *Repository) GetQuizByStatus() ([]model.Quiz, error) {
 			&quiz.LinkToQuiz,
 			&quiz.Status,
 			&quiz.UserID,
-			&quiz.Answers,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan quiz: %w", err)
 		}

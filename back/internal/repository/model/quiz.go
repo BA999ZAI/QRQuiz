@@ -14,5 +14,4 @@ type Quiz struct {
 	LinkToQuiz string    `json:"link_to_quiz"`
 	Status     bool      `json:"status"`
 	UserID     string    `json:"user_id"`
-	Answers    string    `json:"answers"`
 }

@@ -14,17 +14,16 @@ func (s *Server) handlerQuizAddResultPost(c *gin.Context) {
 		return
 	}
 
-	var result entity.Reply
+	var result []entity.Reply
 	if err := c.BindJSON(&result); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error parse body: ": err.Error()})
 		return
 	}
 
-	response, err := s.Usecase.AddResult(id, result)
-	if err != nil {
+	if err := s.Usecase.AddResult(id, result); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error usecase": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"quiz": response})
+	c.JSON(http.StatusCreated, gin.H{"quiz": "updated"})
 }
