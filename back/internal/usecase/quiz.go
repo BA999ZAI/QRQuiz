@@ -55,6 +55,7 @@ func (u *Usecase) CreateQuiz(body entity.Quiz) error {
 	body.ID = uuid.New()
 	body.Results = [][]entity.Reply{}
 	body.CreatedAt = time.Now()
+	body.LinkToQuiz = fmt.Sprintf("http://localhost:3000/quiz/:%s", body.ID.String())
 
 	if body.TimeToLive.IsZero() {
 		body.TimeToLive = time.Now().Add(time.Hour * 24 * 7)

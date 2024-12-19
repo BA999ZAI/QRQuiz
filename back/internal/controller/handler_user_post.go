@@ -14,7 +14,7 @@ func (s *Server) handlerUserPost(c *gin.Context) {
 		return
 	}
 
-	if err := s.Usecase.CreateUser(user); err != nil {
+	if _, err := s.Usecase.CreateUser(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error usecase": err.Error()})
 		return
 	}

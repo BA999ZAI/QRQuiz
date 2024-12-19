@@ -34,12 +34,12 @@ func (u *Usecase) GetAllUsers() ([]entity.User, error) {
 	return response, nil
 }
 
-func (u *Usecase) CreateUser(user entity.User) error {
+func (u *Usecase) CreateUser(user entity.User) (entity.User, error) {
 	user.ID = uuid.New()
 
 	hashPassword, err := u.hashPassword(user.Password)
 	if err != nil {
-		return fmt.Errorf("hashPassword: %w", err)
+		return entity.User{}, fmt.Errorf("hashPassword: %w", err)
 	}
 
 	newUser := model.User{
@@ -48,10 +48,15 @@ func (u *Usecase) CreateUser(user entity.User) error {
 		HashPassword: hashPassword,
 	}
 	if err := u.DB.CreateUser(newUser); err != nil {
-		return fmt.Errorf("db createUser: %w", err)
+		return entity.User{}, fmt.Errorf("db createUser: %w", err)
 	}
 
-	return nil
+	response, err := u.DB.GetUserById(user.ID.String())
+	if err != nil {
+		return entity.User{}, fmt.Errorf("usecase GetUserById: %w", err)
+	}
+
+	return u.parseUserRepoToBody(response), nil
 }
 
 func (u *Usecase) UpdateUser(user entity.User) (entity.User, error) {

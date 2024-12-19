@@ -37,6 +37,10 @@ span {
     font-size: 16px;
 }
 
+.answer-input {
+    margin-left: 20px;
+}
+
 /* HEADER */
 
 .header {

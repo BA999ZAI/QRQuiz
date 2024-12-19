@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"github.com/BA999ZAI/QRQuiz/internal/entity"
-	"github.com/BA999ZAI/QRQuiz/internal/service/jwt"
 	"net/http"
+
+	"github.com/BA999ZAI/QRQuiz/internal/entity"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,16 +21,7 @@ func (s *Server) handlerUserLogin(c *gin.Context) {
 		return
 	}
 
-	token, err := jwt.GenerateToken(user.ID.String())
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"token":   token,
-		"user_id": user.ID,
-	})
+	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
 func (s *Server) handlerUserRegister(c *gin.Context) {
@@ -40,10 +31,11 @@ func (s *Server) handlerUserRegister(c *gin.Context) {
 		return
 	}
 
-	if err := s.Usecase.CreateUser(user); err != nil {
+	user, err := s.Usecase.CreateUser(user)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+	c.JSON(http.StatusCreated, gin.H{"user": user})
 }

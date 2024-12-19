@@ -8,11 +8,18 @@ import { useContext } from "react";
 const CreateQuiz = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState([])
+
   const [questionAmount, setQuestionAmount] = useState(1)
   const [questions, setQuestions] = useState([])
+
+  const [answerAmount, setAnswerAmount] = useState([2])
+  const [answers, setAnswers] = useState([[]])
+
   const [timeToLive, setTimeToLive] = useState()
+
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+
   const { isAuthenticated, login, logout, userId } = useContext(AuthContext);
 
 
@@ -35,7 +42,7 @@ const CreateQuiz = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         title: title,
         questions: questions,
         time_to_live: isoDateTime,
@@ -52,6 +59,11 @@ const CreateQuiz = () => {
     navigate("/panel"); // Возвращаемся на панель пользователя
   };
 
+  const addQuestion = () => {
+    setQuestionAmount(questionAmount + 1);
+    setAnswerAmount([...answerAmount, 1]);
+  };
+
   return (
     <div className="create-quiz-container">
       <HeaderUser />
@@ -64,14 +76,31 @@ const CreateQuiz = () => {
         {Array.from({ length: questionAmount }).map((_, index) => (
           <div key={index}>
             <input required type="text" placeholder={`Вопрос ${index + 1}`} />
+            {Array.from({ length: answerAmount[index] }).map((_, answerIndex) => (
+              <input
+                required
+                className="answer-input"
+                key={answerIndex}
+                type="text"
+                placeholder={`Ответ ${answerIndex + 1}`}
+              />
+            ))}
+            <div className="d-flex space-between">
+              <button className="button-auth auth" type="button" onClick={() => setAnswerAmount([...answerAmount, answerAmount[index]++])}>
+                Добавить ответ
+              </button>
+              <button className="button-auth auth" onClick={() => setAnswerAmount([...answerAmount, answerAmount[index] == 1 ? answerAmount[index] : answerAmount[index]--])}>
+                Удалить ответ
+              </button>
+            </div>
           </div>
         ))}
 
         <div className="my-10 d-flex space-between">
-          <button className="button-auth auth" type="button" onClick={() => setQuestionAmount(questionAmount + 1)}>
+          <button className="button-auth auth" type="button" onClick={addQuestion}>
             Добавить вопрос
           </button>
-          <button className="button-auth auth" onClick={() => setQuestionAmount(questionAmount - 1)}>
+          <button className="button-auth auth" onClick={() => setQuestionAmount(questionAmount == 1 ? questionAmount : questionAmount - 1)}>
             Удалить вопрос
           </button>
         </div>
