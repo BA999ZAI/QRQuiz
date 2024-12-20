@@ -41,6 +41,10 @@ span {
     margin-left: 20px;
 }
 
+.wrap {
+    flex-wrap: wrap;
+}
+
 /* HEADER */
 
 .header {
@@ -233,11 +237,54 @@ span {
 
 /* CREATE_QUIZ */
 
-.create-quiz-container {
+.form-quiz {
     background: rgb(15, 15, 15);
+    margin-top: 40px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.create-quiz-container {
+    /* background: rgb(15, 15, 15); */
     color: white;
     text-align: center;
     height: 100%;
+}
+
+.align-center {
+    display: flex;
+    align-items: center;
+}
+
+.qr {
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    transform: scale(1);
+    opacity: 1;
+}
+
+.div-question {
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.input-question {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    color: rgb(15, 15, 15);
+    outline: none;
 }
 
 .create-quiz-container h1 {
