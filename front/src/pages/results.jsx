@@ -7,7 +7,7 @@ const SurveyResults = () => {
     const [questions, setQuestions] = useState([]);
 
     useEffect(() => {
-        fetch(`/api/quiz/${quizId}`)
+        fetch(`http://localhost:8080/api/prefix/quiz/${quizId}`)
             .then((res) => res.json())
             .then((data) => {
                 setQuestions(data.quiz.questions);
@@ -35,11 +35,11 @@ const SurveyResults = () => {
                                 <div
                                     key={answer}
                                     className="circle"
-                                    style={{ width: `${percent * 2}px`, height: `${percent * 2}px` }}
+                                    style={{ width: `${percent * 4}px`, height: `${percent * 4}px` }}
                                 >
-                  <span className="circle-text">
-                    {answer} - {percent}%
-                  </span>
+                                    <span className="circle-text">
+                                        {answer} - {percent}%
+                                    </span>
                                 </div>
                             ))}
                     </div>
