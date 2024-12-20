@@ -66,7 +66,7 @@ const QuizList = () => {
             qrCode.style = "position: absolute; top: 5%; left: 25%; z-index: 1000; width: auto; height: 80vh; transform: scale(1.2); box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);";
             setIsUpQr(true);
         } else {
-            qrCode.style = "position: relative; width: 60px; height: 60px; transform: scale(1);";
+            qrCode.style = "position: relative; width: 60px; height: 60px; z-index: 0; transform: scale(1);";
             setIsUpQr(false);
         }
     };
@@ -77,10 +77,9 @@ const QuizList = () => {
                 quizzes.map((quiz) => (
                     <div key={quiz.id} className="quiz-item">
                         <div className="quiz-item-content">
-                            <h3>{quiz.title}</h3>
+                            <h3><Link to={`/quiz/:${quiz.id}`}>{quiz.title}</Link></h3>
                             <p>{quiz.status ? "Время вышло" : "Опрос идёт"}</p>
                         </div>
-                        <Link className="quiz-link" to={`/quiz/:${quiz.id}`}>Ссылка: {quiz.link_to_quiz}</Link>
                         <img
                             id={`qr_${quiz.id}`}
                             onClick={() => upperQrCode(quiz.id)}

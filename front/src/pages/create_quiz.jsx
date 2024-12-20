@@ -1,40 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import HeaderUser from "../components/header_user";
 import { formatISO } from "date-fns";
 import { AuthContext } from "../auth/AuthContext";
-import { useContext } from "react";
 
 const CreateQuiz = () => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState([])
-
-  const [questionAmount, setQuestionAmount] = useState(1)
-  const [questions, setQuestions] = useState([])
-
-  const [answerAmount, setAnswerAmount] = useState([2])
-  const [answers, setAnswers] = useState([[]])
-
-  const [timeToLive, setTimeToLive] = useState()
-
+  const [title, setTitle] = useState("");
+  const [questionAmount, setQuestionAmount] = useState(1);
+  const [questions, setQuestions] = useState([]);
+  const [answerAmount, setAnswerAmount] = useState([2]);
+  const [answers, setAnswers] = useState([[]]);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-
-  const { isAuthenticated, login, logout, userId } = useContext(AuthContext);
-
+  const { userId } = useContext(AuthContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     // Объединяем дату и время в один объект Date
     const dateTime = new Date(`${date}T${time}`);
 
     // Преобразуем в формат ISO с временной зоной
     const isoDateTime = formatISO(dateTime, {
-      format: "extended", // Используем расширенный формат
-      representation: "complete", // Включаем временную зону
+      format: "extended",
+      representation: "complete",
     });
 
-    console.log("Отправляем на бэкенд:", isoDateTime);
+    // Собираем данные из инпутов
+    const questionsData = Array.from({ length: questionAmount }).map((_, index) => ({
+      id: index + 1,
+      question: questions[index] || "",
+      answers: answers[index] || [],
+    }));
+    
 
     // Пример отправки на бэкенд (замените на ваш API)
     fetch("http://localhost:8080/api/prefix/quiz", {
@@ -44,28 +43,28 @@ const CreateQuiz = () => {
       },
       body: JSON.stringify({
         title: title,
-        questions: questions,
+        questions: questionsData,
         time_to_live: isoDateTime,
         user_id: userId,
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Ответ от сервера:", data);
+        alert("Ответ от сервера:", data);
+        
+        navigate("/panel"); // Возвращаемся на панель пользователя
       })
       .catch((error) => {
         console.error("Ошибка при отправке данных:", error);
       });
-    navigate("/panel"); // Возвращаемся на панель пользователя
   };
 
   const addQuestion = () => {
     setQuestionAmount(questionAmount + 1);
-    setAnswerAmount([...answerAmount, 1]); // Добавляем один ответ для нового вопроса
+    setAnswerAmount([...answerAmount, 2]); // Добавляем два ответа для нового вопроса
     setAnswers([...answers, []]); // Добавляем пустой массив ответов для нового вопроса
   };
 
-  // Обработчик удаления вопроса
   const removeQuestion = () => {
     if (questionAmount > 1) {
       setQuestionAmount(questionAmount - 1);
@@ -73,7 +72,6 @@ const CreateQuiz = () => {
       setAnswers(answers.slice(0, -1)); // Удаляем последний массив ответов
     }
   };
-
 
   const addAnswer = (questionIndex) => {
     const newAnswerAmount = [...answerAmount];
@@ -85,7 +83,6 @@ const CreateQuiz = () => {
     setAnswers(newAnswers);
   };
 
-  // Обработчик удаления ответа
   const removeAnswer = (questionIndex) => {
     if (answerAmount[questionIndex] > 1) {
       const newAnswerAmount = [...answerAmount];
@@ -97,25 +94,52 @@ const CreateQuiz = () => {
       setAnswers(newAnswers);
     }
   };
-  
+
+  const handleQuestionChange = (index, value) => {
+    const newQuestions = [...questions];
+    newQuestions[index] = value;
+    setQuestions(newQuestions);
+  };
+
+  const handleAnswerChange = (questionIndex, answerIndex, value) => {
+    const newAnswers = [...answers];
+    newAnswers[questionIndex][answerIndex] = value;
+    setAnswers(newAnswers);
+  };
+
   return (
     <div className="create-quiz-container">
       <HeaderUser />
 
-      <h1>Создать опрос</h1>
       <form className="form-quiz" onSubmit={handleSubmit}>
-        {/* tilte */}
-        <input type="text" placeholder="Название опроса" required />
-        {/* questions */}
+        {/* Название опроса */}
+        <input
+          type="text"
+          placeholder="Название опроса"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+
+        {/* Вопросы */}
         {Array.from({ length: questionAmount }).map((_, index) => (
           <div className="d-flex wrap space-between div-question" key={index}>
-            <input className="input-question" required type="text" placeholder={`Вопрос ${index + 1}`} />
+            <input
+              className="input-question"
+              required
+              type="text"
+              placeholder={`Вопрос ${index + 1}`}
+              value={questions[index] || ""}
+              onChange={(e) => handleQuestionChange(index, e.target.value)}
+            />
             {Array.from({ length: answerAmount[index] }).map((_, answerIndex) => (
               <input
                 required
                 key={answerIndex}
                 type="text"
                 placeholder={`Ответ ${answerIndex + 1}`}
+                value={answers[index][answerIndex] || ""}
+                onChange={(e) => handleAnswerChange(index, answerIndex, e.target.value)}
               />
             ))}
             <div className="d-flex space-between">
@@ -138,8 +162,7 @@ const CreateQuiz = () => {
           </button>
         </div>
 
-
-        {/* time to live */}
+        {/* Дата и время окончания опроса */}
         <h3>Дата и время окончания опроса:</h3>
         <div className="d-flex space-between align-center">
           <label>Дата:</label>

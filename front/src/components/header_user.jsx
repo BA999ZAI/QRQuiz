@@ -2,12 +2,38 @@ import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LogoutButton from "./logout_button";
 import { AuthContext } from "../auth/AuthContext";
+import { use } from "react";
+import { cache } from "react";
 
 const HeaderUser = () => {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
-    const { isAuthenticated, userId, logout, email } = useContext(AuthContext);
-
+    const { isAuthenticated, userId, logout } = useContext(AuthContext);
+    const [email, setEmail] = useState("");
     const navigate = useNavigate();
+
+
+
+    useEffect(() => {
+        const getuserbyid = async (id) => {
+            try {
+                const response = await fetch(`http://localhost:8080/api/prefix/user/${id}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                const data = await response.json();
+                const resp = data.user
+                setEmail(resp.email)
+                console.log(resp.email)
+            } catch (error) {
+                console.error("Error fetching user:", error);
+            }
+        };
+    
+        getuserbyid(userId);
+
+    }, [userId]);
 
     const handleLogout = () => {
         logout();
