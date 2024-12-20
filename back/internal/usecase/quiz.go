@@ -12,15 +12,35 @@ import (
 	"github.com/google/uuid"
 )
 
-func (u *Usecase) GetQuizById(id string) (entity.Quiz, error) {
-	quiz, err := u.DB.GetQuizById(id)
+func (u *Usecase) GetQuizById(id string) (entity.Quiz, map[int]map[string]int, error) {
+	rawQuiz, err := u.DB.GetQuizById(id)
 	if err != nil {
-		return entity.Quiz{}, fmt.Errorf("db GetQuizById: %w", err)
+		return entity.Quiz{}, nil, fmt.Errorf("db GetQuizById: %w", err)
 	}
 
-	response := u.parseQuizRepoToBody(quiz)
+	quiz := u.parseQuizRepoToBody(rawQuiz)
 
-	return response, nil
+	if quiz.Status {
+		results := u.calculateResults(quiz)
+		return quiz, results, nil
+	}
+
+	return quiz, nil, nil
+}
+
+func (u *Usecase) calculateResults(quiz entity.Quiz) map[int]map[string]int {
+	results := make(map[int]map[string]int) // questionID -> answer -> count
+
+	for _, userReplies := range quiz.Results {
+		for _, reply := range userReplies {
+			if _, ok := results[reply.ID]; !ok {
+				results[reply.ID] = make(map[string]int)
+			}
+			results[reply.ID][reply.Reply]++
+		}
+	}
+
+	return results
 }
 
 func (u *Usecase) GetQuizByUserId(id string) ([]entity.Quiz, error) {
