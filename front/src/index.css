@@ -530,4 +530,90 @@ span {
     box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
 }
 
+/* Quiz */
+.quiz-container {
+    max-width: 600px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.quiz-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.quiz-loading {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.quiz-error {
+    color: red;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Стили вопросов и ответов */
+.quiz-question {
+    margin-bottom: 20px;
+}
+
+.quiz-answer {
+    margin-bottom: 5px;
+}
+
+.quiz-custom-answer {
+    margin-top: 10px;
+}
+
+.quiz-input {
+    display: block;
+    margin-top: 5px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Стили кнопки */
+.quiz-submit {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: #FFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.quiz-submit:hover {
+    background-color: #0056b3;
+}
+
+/* Стили кнопки вернуться к списку опросов */
+.quiz-back-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.quiz-back-button:hover {
+    background-color: #0056b3;
+}
+
 
