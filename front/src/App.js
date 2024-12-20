@@ -6,6 +6,7 @@ import CreateQuiz from "./pages/create_quiz";
 import Quiz from "./pages/quiz";
 import UserPanel from "./pages/user_panel";
 import { AuthContext } from "./auth/AuthContext";
+import SurveyResults from "./pages/results";
 
 const ProtectedRoute = ({ element }) => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -48,6 +49,10 @@ function App() {
         <Route
           path="/panel"
           element={<ProtectedRoute element={<UserPanel />} />}
+        />
+        <Route
+            path="/results/:id"
+            element={<ProtectedRoute element={<SurveyResults />} />}
         />
 
         {/* Если маршрут не найден, перенаправляем на главную страницу */}

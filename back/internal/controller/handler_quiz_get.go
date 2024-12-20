@@ -15,7 +15,7 @@ func (s *Server) handlerQuizGetById(c *gin.Context) {
 		return
 	}
 
-	quiz, err := s.Usecase.GetQuizById(id)
+	quiz, results, err := s.Usecase.GetQuizById(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error usecase": err.Error()})
 		return
@@ -28,8 +28,9 @@ func (s *Server) handlerQuizGetById(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"quiz": quiz,
-		"qr":   codeData,
+		"quiz":    quiz,
+		"results": results,
+		"qr":      codeData,
 	})
 }
 
@@ -65,5 +66,5 @@ func (s *Server) handlerQuizGetAll(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK,  gin.H{"quizzes": quizes})
+	c.JSON(http.StatusOK, gin.H{"quizzes": quizes})
 }
