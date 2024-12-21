@@ -15,21 +15,21 @@ const Quiz = () => {
             try {
                 const response = await fetch(`http://localhost:8080/api/prefix/quiz/${id.slice(1)}`);
                 if (!response.ok) {
-                    throw new Error("Опрос не найден");
+                    alert("Опрос не найден");
                 }
 
                 const data = await response.json();
                 const quiz = data.quiz;
 
                 if (!quiz.questions || quiz.questions.length === 0) {
-                    throw new Error("У опроса нет вопросов");
+                    alert("У опроса нет вопросов");
                 }
 
                 const invalidQuestions = quiz.questions.filter(
                     (question) => !question.answers || question.answers.length === 0
                 );
                 if (invalidQuestions.length > 0) {
-                    throw new Error("У одного или нескольких вопросов отсутствуют варианты ответа");
+                    alert("У одного или нескольких вопросов отсутствуют варианты ответа");
                 }
 
                 setQuizData(quiz);
@@ -66,8 +66,8 @@ const Quiz = () => {
         }));
 
         try {
-            const response = await fetch(`http://localhost:8080/api/prefix/quiz/${id.slice(1)}/results`, {
-                method: "POST",
+            const response = await fetch(`http://localhost:8080/api/prefix/quiz/${id.slice(1)}`, {
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -76,8 +76,9 @@ const Quiz = () => {
 
             if (response.ok) {
                 alert("Опрос завершён. Спасибо за участие!");
+                navigate("/");
             } else {
-                throw new Error("Ошибка отправки результатов");
+                alert("Ошибка отправки результатов");
             }
         } catch (err) {
             console.error("Error submitting results:", err);
