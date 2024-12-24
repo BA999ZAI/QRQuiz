@@ -20,7 +20,7 @@ func InitConfig() (*Config, error) {
 
 	port := os.Getenv("HTTP_SERVER_PORT")
 	if port == "" {
-		return nil, fmt.Errorf("port is not set")
+		port = "10000"
 	}
 
 	baseApiPrefix := os.Getenv("BASE_API_PREFIX")
