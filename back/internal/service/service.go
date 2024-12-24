@@ -45,7 +45,7 @@ func StartApp() {
 	}
 
 	// started service
-	routes.Run(fmt.Sprintf(":%s", cfg.HttpServer))
+	routes.Run(fmt.Sprintf(":10000"))
 }
 
 func loadConfig() (*config.Config, error) {

@@ -8,7 +8,6 @@ import (
 )
 
 type Config struct {
-	HttpServer string
 	HttpPrefix string
 	DBPATH     string
 }
@@ -16,11 +15,6 @@ type Config struct {
 func InitConfig() (*Config, error) {
 	if err := godotenv.Load(); err != nil {
 		return nil, fmt.Errorf("error loading .env file: %v", err)
-	}
-
-	port := os.Getenv("HTTP_SERVER_PORT")
-	if port == "" {
-		port = "10000"
 	}
 
 	baseApiPrefix := os.Getenv("BASE_API_PREFIX")
@@ -34,7 +28,6 @@ func InitConfig() (*Config, error) {
 	}
 
 	return &Config{
-		HttpServer: port,
 		HttpPrefix: baseApiPrefix,
 		DBPATH:     databaseURL,
 	}, nil
