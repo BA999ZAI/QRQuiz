@@ -45,7 +45,7 @@ func StartApp() {
 	}
 
 	// started service
-	routes.Run(":10000")
+	routes.Run(":8080")
 }
 
 func loadConfig() (*config.Config, error) {
