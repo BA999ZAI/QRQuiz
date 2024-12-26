@@ -1,3 +1,0 @@
-# QRQuiz
-
-Backend + Frontend
