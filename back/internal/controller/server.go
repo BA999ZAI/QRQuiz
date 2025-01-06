@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/BA999ZAI/QRQuiz/internal/service/middleware"
-	"log"
+	// "log"
 	"time"
 
 	"github.com/BA999ZAI/QRQuiz/internal/config"
@@ -62,17 +62,17 @@ func (s *Server) RegisterRoutes(r *gin.Engine) {
 		group.GET("/health", s.handlerHealth) // is working
 	}
 
-	go func() {
-		ticker := time.NewTicker(1 * time.Second)
-		defer ticker.Stop()
+	// go func() {
+	// 	ticker := time.NewTicker(1 * time.Second)
+	// 	defer ticker.Stop()
 
-		for {
-			select {
-			case <-ticker.C:
-				if err := s.Usecase.CheckQuiz(); err != nil {
-					log.Println("error with check quiz: ", err)
-				}
-			}
-		}
-	}()
+	// 	for {
+	// 		select {
+	// 		case <-ticker.C:
+	// 			if err := s.Usecase.CheckQuiz(); err != nil {
+	// 				log.Println("error with check quiz: ", err)
+	// 			}
+	// 		}
+	// 	}
+	// }()
 }

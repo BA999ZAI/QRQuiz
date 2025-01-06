@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	// "github.com/BA999ZAI/QRQuiz/internal/adapter/sqlite"
 	"github.com/BA999ZAI/QRQuiz/internal/adapter/sqlite"
 	"github.com/BA999ZAI/QRQuiz/internal/config"
 	"github.com/BA999ZAI/QRQuiz/internal/controller"
@@ -21,11 +22,12 @@ func StartApp() {
 	}
 
 	// connect to DB
-	db, err := sql.Open("sqlite3", cfg.DBPATH)
+	db, err := initDB(cfg)
 	if err != nil {
 		log.Println("failed to initialize database: ", err)
 	}
 	defer db.Close()
+	fmt.Println("Successfully connected to the database")
 
 	// init migrations
 	if err := sqlite.RunMigrations(db); err != nil {
@@ -45,7 +47,7 @@ func StartApp() {
 	}
 
 	// started service
-	routes.Run(":8080")
+	routes.Run(fmt.Sprintf(":%d", cfg.HttpPort))
 }
 
 func loadConfig() (*config.Config, error) {
@@ -55,6 +57,32 @@ func loadConfig() (*config.Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func initDB(cfg *config.Config) (*sql.DB, error) {
+	var (
+		db      *sql.DB
+		err     error
+		connStr string = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+			cfg.DBHost,
+			cfg.DBPort,
+			cfg.DBUser,
+			cfg.DBPassword,
+			cfg.DBName,
+		)
+	)
+
+	db, err = sql.Open("postgres", connStr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %v", err)
+	}
+
+	err = db.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("failed to ping database: %v", err)
+	}
+
+	return db, nil
 }
 
 func initRepository(db *sql.DB) *repository.Repository {
