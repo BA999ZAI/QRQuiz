@@ -48,7 +48,6 @@ const QuizList = () => {
     }, [userId]);
 
     if (loading) return <div>Загрузка...</div>;
-    if (error) return <div>Ошибка: {error}</div>;
 
     const deleteQuiz = (quizId) => async () => {
         try {
@@ -71,9 +70,13 @@ const QuizList = () => {
         }
     };
 
+    const redirectCreateQuiz = () => {
+        navigate("/create_quiz");
+    };
+
     return (
         <div className="quiz-list">
-            {quizzes.length > 0 ? (
+            {quizzes.length ? (
                 quizzes.map((quiz) => (
                     <div key={quiz.id} className="quiz-item">
                         <div className="quiz-item-content">
@@ -98,7 +101,18 @@ const QuizList = () => {
                     </div>
                 ))
             ) : (
-                <div>Нет опросов</div>
+                <div className="new-quiz-container">
+                    <p onClick={redirectCreateQuiz} className="add-new-quiz-block">+</p>
+
+                    <div>
+                        <p>
+                            Нажмите на кнопку, чтобы создать
+                        </p>
+                        <p>
+                            свой первый опрос
+                        </p>
+                    </div>
+                </div>
             )}
         </div>
     );

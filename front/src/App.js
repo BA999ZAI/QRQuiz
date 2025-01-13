@@ -43,12 +43,12 @@ function App() {
         {/* Защищенные маршруты */}
         <Route
           path="/create_quiz"
-          element={<ProtectedRoute element={<CreateQuiz />} />}
+          element={<CreateQuiz />}
         />
         <Route path="/quiz/:id" element={<Quiz />} />
         <Route
           path="/panel"
-          element={<ProtectedRoute element={<UserPanel />} />}
+          element={<UserPanel />}
         />
         <Route
             path="/results/:id"

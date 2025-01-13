@@ -3,7 +3,7 @@ import { AuthContext } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { isAuthenticated, login, logout, userId } = useContext(AuthContext);
@@ -75,45 +75,65 @@ const AuthForm = () => {
   }
 
   return (
+
+    // <div className="auth-container">
+    //   <div className="auth-box">
+    //     <h2>{isLogin ? "Авторизация" : "Регистрация"}</h2>
+    //     <form onSubmit={auth}>
+    //       <div className="form-group">
+    //         <label htmlFor="email">Email</label>
+    //         <input
+    //           type="email"
+    //           id="email"
+    //           placeholder="Введите email"
+    //           value={email}
+    //           onChange={(e) => setEmail(e.target.value)}
+    //           required
+    //         />
+    //       </div>
+    //       <div className="form-group">
+    //         <label htmlFor="password">Пароль</label>
+    //         <input
+    //           type="password"
+    //           id="password"
+    //           placeholder="Введите пароль"
+    //           value={password}
+    //           onChange={(e) => setPassword(e.target.value)}
+    //           required
+    //         />
+    //       </div>
+    //       <button type="submit" className="auth-button">
+    //         {isLogin ? "Войти" : "Зарегистрироваться"}
+    //       </button>
+    //     </form>
+    //     <div className="toggle-form">
+    //       <p>
+    //         {isLogin ? "Нет аккаунта?" : "Уже есть аккаунт?"}
+    //         <span onClick={() => setIsLogin(!isLogin)}>
+    //           {isLogin ? " Зарегистрируйтесь" : " Войдите"}
+    //         </span>
+    //       </p>
+    //     </div>
+    //   </div>
+    // </div>
     <div className="auth-container">
-      <div className="auth-box">
-        <h2>{isLogin ? "Авторизация" : "Регистрация"}</h2>
-        <form onSubmit={auth}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="Введите email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Пароль</label>
-            <input
-              type="password"
-              id="password"
-              placeholder="Введите пароль"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="auth-button">
-            {isLogin ? "Войти" : "Зарегистрироваться"}
-          </button>
-        </form>
-        <div className="toggle-form">
-          <p>
-            {isLogin ? "Нет аккаунта?" : "Уже есть аккаунт?"}
-            <span onClick={() => setIsLogin(!isLogin)}>
-              {isLogin ? " Зарегистрируйтесь" : " Войдите"}
-            </span>
-          </p>
-        </div>
-      </div>
+      <h2>{isLogin ? "ВХОД В ЛИЧНЫЙ КАБИНЕТ" : "РЕГИСТРАЦИЯ"}</h2>
+
+      <form>
+        <input type="email" placeholder="Введите email" value={email} onChange={(e) => setEmail(e.target.value)} />
+
+        <input type="password" placeholder={isLogin ? "Пароль" : "Придумайте пароль"} value={password} onChange={(e) => setPassword(e.target.value)} />
+        {isLogin ? null : <input type="password" placeholder="Подтвердите пароль" value={password} onChange={(e) => setPassword(e.target.value)} />}
+        <button onClick={auth}>{isLogin ? "Войти" : "Зарегистрироваться"}</button>
+      </form>
+
+
+      <p>
+        {isLogin ? "У Вас нет аккаунта?" : "У Вас есть аккаунт?"}
+        <span onClick={() => setIsLogin(!isLogin)}>
+          {isLogin ? " Зарегистрируйтесь" : " Войдите"}
+        </span>
+      </p>
     </div>
   );
 };

@@ -1,12 +1,14 @@
 import Header from "../components/header"
 import AuthForm from "../components/auth_form"
+import Footer from "../components/footer"
 
 const Auth = () => {
     return (
-        <div className="d-flex flex-column h-full">
+        <div className="auth-page">
             <Header />
 
             <AuthForm />
+            <Footer />
         </div>
     )
 }

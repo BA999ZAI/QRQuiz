@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import LogoutButton from "./logout_button";
 import { AuthContext } from "../auth/AuthContext";
 import { use } from "react";
 import { cache } from "react";
@@ -53,7 +52,7 @@ const HeaderUser = () => {
 
             <div className="div-auth">
                 <Link to="/panel" className="button-auth auth mr-10">Панель</Link>
-                <LogoutButton onClick={handleLogout} />
+                {/* <LogoutButton onClick={handleLogout} /> */}
             </div>
 
             {isProfileOpen && (

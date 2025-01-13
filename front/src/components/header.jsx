@@ -1,9 +1,8 @@
 import { Link, useNavigate } from "react-router-dom"
-import LogoutButton from "./logout_button"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { AuthContext } from "../auth/AuthContext"
 
-const Header = () => {
+const Header = ({ page }) => {
     const { isAuthenticated, userId, logout } = useContext(AuthContext);
 
     const navigate = useNavigate();
@@ -13,18 +12,48 @@ const Header = () => {
         navigate("/")
     };
 
+    const handleAuth = () => {
+        navigate("/authorization")
+    }
+
+    useEffect(() => {
+        if (page == "profile") {
+            const doc = document.getElementById("profile")
+            doc.style.color = "white"
+            doc.style.backgroundColor = "#FB9461"
+        } else if (page === "panel") {
+            const doc = document.getElementById("panel")
+            doc.style.color = "white"
+            doc.style.backgroundColor = "#FB9461"
+        } else {
+            const doc = document.getElementById("base")
+            doc.style.color = "white"
+            doc.style.backgroundColor = "#FB9461"
+        }
+    }, [1])
+
     return (
         <header className="header">
-            <Link className="logo" to="/">
-                QRQuiz
-            </Link>
+            <a className="logo">QRQuiz</a>
 
-            <div className="div-auth">
-                <Link className="button-auth auth mr-10" to="/authorization">
-                    Авторизация
-                </Link>
-                <LogoutButton onClick={handleLogout} />
+            {/* Switch Главная||Мои опросы||Профиль */}
+            <div className="switch-page-div">
+                <Link to="/" id="base" className="switch-page-link">Главная</Link>
+                <Link to="/panel" id="panel" className="switch-page-link">Мои опросы</Link>
+                <Link to="/profile" id="profile" className="switch-page-link">Профиль</Link>
             </div>
+
+
+            {/* Если авторизован Выход, иначе Зарегистрироваться */}
+            {isAuthenticated ? (
+                <button onClick={handleLogout} className="auth-button">
+                    Выход
+                </button>
+            ) : (
+                <button onClick={handleAuth} className="auth-button">
+                    Зарегистрироваться
+                </button>
+            )}
         </header>
     )
 }
