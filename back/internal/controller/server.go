@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/BA999ZAI/QRQuiz/internal/service/middleware"
+
 	// "log"
 	"time"
 
@@ -48,8 +48,6 @@ func (s *Server) RegisterRoutes(r *gin.Engine) {
 		group.POST("/register", s.handlerUserRegister)
 
 		// Middleware
-		auth := group
-		auth.Use(middleware.JWTAuthMiddleware())
 		// TODO: продумаьть и обернуть пользовательские ручки  в middleware
 		//{
 		//	auth.GET("/quiz/user/:id", s.handlerQuizGetByUserId) // Пример защищенного маршрута
