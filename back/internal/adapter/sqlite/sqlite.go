@@ -14,12 +14,6 @@ const (
 		email TEXT NOT NULL UNIQUE,
 		password TEXT NOT NULL
 	);`
-	tableFolders = `CREATE TABLE folders (
-		id TEXT PRIMARY KEY NOT NULL UNIQUE,
-		name TEXT NOT NULL,
-		user_id TEXT NOT NULL,
-		FOREIGN KEY (user_id) REFERENCES users(id),
-	);`
 	tableQuizzes = `CREATE TABLE quizzes (
 		id TEXT PRIMARY KEY NOT NULL UNIQUE,
 		title TEXT NOT NULL,
@@ -29,8 +23,6 @@ const (
 		time_to_live TIMESTAMP DEFAULT (datetime ('now', '+1 day')),
 		link_to_quiz TEXT NOT NULL,
 		status BOOLEAN NOT NULL DEFAULT FALSE,
-		folder_id TEXT NOT NULL,
-		FOREIGN KEY (folder_id) REFERENCES folders(id),
 		user_id TEXT NOT NULL,
 		FOREIGN KEY (user_id) REFERENCES users(id),
 	);`

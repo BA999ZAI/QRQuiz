@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	// "github.com/BA999ZAI/QRQuiz/internal/adapter/sqlite"
 	"github.com/BA999ZAI/QRQuiz/internal/adapter/sqlite"
 	"github.com/BA999ZAI/QRQuiz/internal/config"
 	"github.com/BA999ZAI/QRQuiz/internal/controller"
@@ -22,12 +21,17 @@ func StartApp() {
 	}
 
 	// connect to DB
-	db, err := initDB(cfg)
+	// db, err := initDB(cfg)
+	// if err != nil {
+	// 	log.Println("failed to initialize database: ", err)
+	// }
+	// defer db.Close()
+	// fmt.Println("Successfully connected to the database")
+
+	db, err := sql.Open("sqlite3", "database.db")
 	if err != nil {
-		log.Println("failed to initialize database: ", err)
+		log.Println("failed to connect to the database: ", err)
 	}
-	defer db.Close()
-	fmt.Println("Successfully connected to the database")
 
 	// init migrations
 	if err := sqlite.RunMigrations(db); err != nil {
