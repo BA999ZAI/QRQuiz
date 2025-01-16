@@ -25,6 +25,10 @@ a {
     color: black;
 }
 
+.loading {
+    margin: auto;
+}
+
 .circle-text {
     color: black;
 }
@@ -142,7 +146,7 @@ span {
     border-radius: 25px;
 }
 
-.add-new-quiz-block {
+.add-new-quiz-block-base-page {
     display: flex;
     justify-content: space-between;
     margin: 70px 30px 0px 30px;
@@ -179,7 +183,7 @@ span {
     background-color: #FCF0E8;
 }
 
-.add-new-quiz-block p:hover {
+.add-new-quiz-block-base-page p:hover {
     cursor: pointer;
 }
 
@@ -644,6 +648,7 @@ body {
     color: white;
     text-align: center;
     height: 100vh;
+    justify-content: space-between;
 }
 
 .create-quiz-container-page form {
@@ -679,7 +684,7 @@ body {
     margin-top: 20px;
     margin-left: 50px;
     margin-right: 50px;
-    padding: 50px 40px 25px 40px;
+    padding: 50px 40px 40px 40px;
     border-radius: 9px;
     border: 2px solid #F7F7F7;
 }
@@ -744,14 +749,74 @@ body {
     padding: 12px 48px;
 }
 
+.margin-left-92 {
+    margin-left: 92px;
+}
 
+.margin-right-92 {
+    margin-right: 92px;
+}
+
+.margin-top-20 {
+    margin-top: 40px;
+}
+
+.div-date-time {
+    margin: 20px 92px 0px 92px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.h3-date-time {
+    color: #2F2F2F;
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.div-date-time div {
+    display: flex;
+    flex-direction: column;
+}
+
+.div-date-time div label {
+    position: absolute;
+    margin-left: 76px;
+    color: #7D7D7D;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.div-date-time div input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 182px;
+    height: 52px;
+    border: 1px solid #DFEAFF;
+    background-color: #F7FAFF;
+}
+
+
+.button-create-quiz {
+    font-size: 14px;
+    font-weight: 400;
+    display: flex;
+    background-color: #FB9461;
+    border: 1px solid #FB9461;
+    border-radius: 25px;
+    color: white;
+    justify-content: center;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin: 40px 92px;
+}
 
 
 
 
 
 .create-quiz-container-page footer {
-    margin-top: auto;
+    margin-top: 60px;
 }
 
 
@@ -849,6 +914,10 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
+}
+
+.dashboard-container footer {
+    margin-top: auto;
 }
 
 .dashboard-header {

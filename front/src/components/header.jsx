@@ -17,11 +17,7 @@ const Header = ({ page }) => {
     }
 
     useEffect(() => {
-        if (page == "profile") {
-            const doc = document.getElementById("profile")
-            doc.style.color = "white"
-            doc.style.backgroundColor = "#FB9461"
-        } else if (page === "panel") {
+        if (page === "panel") {
             const doc = document.getElementById("panel")
             doc.style.color = "white"
             doc.style.backgroundColor = "#FB9461"
@@ -40,7 +36,6 @@ const Header = ({ page }) => {
             <div className="switch-page-div">
                 <Link to="/" id="base" className="switch-page-link">Главная</Link>
                 <Link to="/panel" id="panel" className="switch-page-link">Мои опросы</Link>
-                <Link to="/profile" id="profile" className="switch-page-link">Профиль</Link>
             </div>
 
 

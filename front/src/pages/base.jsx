@@ -1,7 +1,22 @@
+import { useContext } from "react"
 import Footer from "../components/footer"
 import Header from "../components/header"
+import { useNavigate } from "react-router-dom"
+import { AuthContext } from "../auth/AuthContext"
+
 
 const Base = () => {
+    const navigate = useNavigate();
+    const { isAuthenticated, userId, logout } = useContext(AuthContext);
+
+    const handleCreateQuiz = () => {
+        if (isAuthenticated) {
+            navigate("/create_quiz")
+        } else {
+            navigate("/authorization")
+        }
+    }
+
     return (
         <div className="d-flex flex-column vh-100">
             <Header page={"base"} />
@@ -17,18 +32,18 @@ const Base = () => {
                     узнать больше о своей аудитории.
                 </p>
 
-                <button className="create-quiz-button">
+                <button onClick={handleCreateQuiz} className="create-quiz-button">
                     Создать опрос
                 </button>
             </div>
 
-            <div className="add-new-quiz-block">
-                <p className="add-new-quiz-block-white">+</p>
-                <p className="add-new-quiz-block-orange">+</p>
-                <p className="add-new-quiz-block-orange">+</p>
-                <p className="add-new-quiz-block-white">+</p>
-                <p className="add-new-quiz-block-orange">+</p>
-                <p className="add-new-quiz-block-white">+</p>
+            <div className="add-new-quiz-block-base-page">
+                <p onClick={handleCreateQuiz} className="add-new-quiz-block-white">+</p>
+                <p onClick={handleCreateQuiz} className="add-new-quiz-block-orange">+</p>
+                <p onClick={handleCreateQuiz} className="add-new-quiz-block-orange">+</p>
+                <p onClick={handleCreateQuiz} className="add-new-quiz-block-white">+</p>
+                <p onClick={handleCreateQuiz} className="add-new-quiz-block-orange">+</p>
+                <p onClick={handleCreateQuiz} className="add-new-quiz-block-white">+</p>
             </div>
 
             <div className="your-opinion">

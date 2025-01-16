@@ -47,7 +47,7 @@ const QuizList = () => {
         fetchQuizData();
     }, [userId]);
 
-    if (loading) return <div>Загрузка...</div>;
+    if (loading) return <div className="loading">Загрузка...</div>;
 
     const deleteQuiz = (quizId) => async () => {
         try {
@@ -73,6 +73,15 @@ const QuizList = () => {
     const redirectCreateQuiz = () => {
         navigate("/create_quiz");
     };
+
+    const handleCreteQuiz = () => {
+        if (isAuthenticated) {
+            redirectCreateQuiz();
+        } else {
+            alert("Вы не авторизованы, пожалуйста, авторизуйтесь");
+            navigate("/authorization");
+        }
+    }
 
     return (
         <div className="quiz-list">
@@ -102,7 +111,7 @@ const QuizList = () => {
                 ))
             ) : (
                 <div className="new-quiz-container">
-                    <p onClick={redirectCreateQuiz} className="add-new-quiz-block">+</p>
+                    <p onClick={handleCreteQuiz} className="add-new-quiz-block">+</p>
 
                     <div>
                         <p>

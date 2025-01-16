@@ -110,80 +110,6 @@ const CreateQuiz = () => {
   };
 
   return (
-    // <div className="create-quiz-container">
-    //   <HeaderUser />
-
-    //   <form className="form-quiz" onSubmit={handleSubmit}>
-    //     {/* Название опроса */}
-    //     <input
-    //       type="text"
-    //       placeholder="Название опроса"
-    //       value={title}
-    //       onChange={(e) => setTitle(e.target.value)}
-    //       required
-    //     />
-
-    //     {/* Вопросы */}
-    //     {Array.from({ length: questionAmount }).map((_, index) => (
-    //       <div className="d-flex wrap space-between div-question" key={index}>
-    //         <input
-    //           className="input-question"
-    //           required
-    //           type="text"
-    //           placeholder={`Вопрос ${index + 1}`}
-    //           value={questions[index] || ""}
-    //           onChange={(e) => handleQuestionChange(index, e.target.value)}
-    //         />
-    //         {Array.from({ length: answerAmount[index] }).map((_, answerIndex) => (
-    //           <input
-    //             required
-    //             key={answerIndex}
-    //             type="text"
-    //             placeholder={`Ответ ${answerIndex + 1}`}
-    //             value={answers[index][answerIndex] || ""}
-    //             onChange={(e) => handleAnswerChange(index, answerIndex, e.target.value)}
-    //           />
-    //         ))}
-    //         <div className="d-flex space-between">
-    //           <button className="button-auth auth" type="button" onClick={() => addAnswer(index)}>
-    //             Добавить ответ
-    //           </button>
-    //           <button className="button-auth auth" onClick={() => removeAnswer(index)}>
-    //             Удалить ответ
-    //           </button>
-    //         </div>
-    //       </div>
-    //     ))}
-
-    //     <div className="my-10 d-flex space-between">
-    //       <button className="button-auth auth" type="button" onClick={addQuestion}>
-    //         Добавить вопрос
-    //       </button>
-    //       <button className="button-auth auth" onClick={removeQuestion}>
-    //         Удалить вопрос
-    //       </button>
-    //     </div>
-
-    //     {/* Дата и время окончания опроса */}
-    //     <h3>Дата и время окончания опроса:</h3>
-    //     <div className="d-flex space-between align-center">
-    //       <label>Дата:</label>
-    //       <input
-    //         type="date"
-    //         value={date}
-    //         onChange={(e) => setDate(e.target.value)}
-    //       />
-    //       <label>Время:</label>
-    //       <input
-    //         type="time"
-    //         value={time}
-    //         onChange={(e) => setTime(e.target.value)}
-    //       />
-    //     </div>
-    //     <button className="button-auth auth mx-auto" type="submit">Создать</button>
-    //   </form>
-    // </div>
-
     <div className="create-quiz-container-page">
       <Header page={"panel"} />
 
@@ -237,32 +163,37 @@ const CreateQuiz = () => {
           </div>
         ))}
 
-        <div className="my-10 d-flex space-between">
-          <button className="button-auth auth" type="button" onClick={addQuestion}>
+        <div className="my-10 d-flex space-between margin margin-top-20">
+          <button className="button-remove-otvet margin-left-92" type="button" onClick={addQuestion}>
             Добавить вопрос
           </button>
-          <button className="button-auth auth" onClick={removeQuestion}>
+          <button className="button-add-otvet margin-right-92" onClick={removeQuestion}>
             Удалить вопрос
           </button>
         </div>
 
         {/* Дата и время окончания опроса */}
-        <h3>Дата и время окончания опроса:</h3>
-        <div className="d-flex space-between align-center">
-          <label>Дата:</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-          <label>Время:</label>
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-          />
+        <h3 className="h3-date-time">Выберите дату и время окончания опроса</h3>
+        <div className="div-date-time">
+          <div>
+            <label>Дата</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label>Время</label>
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+            />
+          </div>
         </div>
-        <button className="button-auth auth mx-auto" type="submit">Создать</button>
+        <button className="button-create-quiz" type="submit">Создать</button>
       </form>
 
       <Footer />

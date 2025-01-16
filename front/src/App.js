@@ -50,6 +50,7 @@ function App() {
           path="/panel"
           element={<UserPanel />}
         />
+
         <Route
             path="/results/:id"
             element={<ProtectedRoute element={<SurveyResults />} />}
